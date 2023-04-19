@@ -2304,6 +2304,18 @@ void coinbase_create(YAAMP_COIND *coind, YAAMP_JOB_TEMPLATE *templ, json_value *
 		return;
 	}
 
+	else if(strcmp(coind->symbol, "AVN") == 0)  {
+		json_value* founder = json_get_object(json_result, "founder");
+		const char *payee = json_get_string(founder, "payee");
+		json_int_t amount = json_get_int(founder, "amount");
+		const char *script = json_get_string(founder, "script");
+		strcat(templ->coinb2, "02");
+		script_pack_tx(coind, templ->coinb2, amount, script);
+		job_pack_tx(coind, templ->coinb2, available, NULL);
+		strcat(templ->coinb2, "00000000");
+		coind->reward = (double)available/100000000*coind->reward_mul;
+		return;
+	}
 
 	else if(coind->hasmasternodes && coind->oldmasternodes) /* OLD DASH style */
 	{
